@@ -42,6 +42,8 @@ python evaluator.py runs/<run>.json   # re-score a frozen run, no API call
 streamlit run app_streamlit.py     # interface: live run or the latest recorded run
 ```
 
+`evidence/` holds the run described in the tutorial, with interaction IDs redacted, and its repaired workbook. Copy the JSON into `runs/` to open it in the app or re-score it.
+
 `python build_workbook.py` rebuilds the workbook and writes a new `evaluation/manifest.json`. Only run it if you want a fresh baseline; the agent refuses to start if the workbook no longer matches the manifest.
 
 The planted errors are listed in `evaluation/manifest.json` and `build_workbook.py`. The agent's tools never open either file.
