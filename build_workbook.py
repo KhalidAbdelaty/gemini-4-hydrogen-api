@@ -254,7 +254,7 @@ def main():
     manifest = {
         "frozen_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "sha256": {"working_workbook": sha256(WORKING), "reference_workbook": sha256(REFERENCE),
-                   "evaluator": sha256(ROOT / "evaluator.py")},
+                   "evaluator": hashlib.sha256((ROOT / "evaluator.py").read_bytes().replace(b"\r\n", b"\n")).hexdigest()},
         "libreoffice_cross_check": checks,
         "planted_errors": PLANTED,
         "valid_exceptions": EXCEPTIONS,

@@ -58,9 +58,9 @@
     {
       "date": "2026-11-13",
       "file": "evaluator.py",
-      "sha256_after": "02cc96bb3111816b2290b0f73ad8389be6da3b11eaa642d22fdc37f37b7232ad",
-      "change": "complete repair now also requires every integrity check (no stale patches, no unauthorized changes, inputs and sheets unchanged, no number-format changes, LibreOffice agreement, exceptions preserved, no false positives)",
-      "effect_on_recorded_run": "re-scored with no API call: same verdict (complete repair), all 8 integrity checks pass"
+      "sha256_after": "75633de8adce4951db0d4aad7381f1c0174e30dd0928a67fd039dc5cc7e7d533",
+      "change": "complete repair now also requires every integrity check (no stale patches, no unauthorized changes, inputs and sheets unchanged, no number-format changes, LibreOffice agreement, exceptions preserved, no false positives); it also records its own SHA-256 in each result, refuses to run if that hash (line endings normalized to LF) is not in this manifest, and keeps earlier scores under previous_evaluations; relative run paths now work",
+      "effect_on_recorded_run": "re-scored with no API call: same verdict (complete repair), all 8 integrity checks pass; the original score is kept under previous_evaluations"
     },
     {
       "date": "2026-11-13",
@@ -75,6 +75,12 @@
       "sha256_after": "0fe339b9d78166dfe63d29770edf33c66c803f7b64efb2764040923a6c17677a",
       "change": "a failed, cancelled, or incomplete interaction now stops the run and is recorded in stopped_by",
       "effect_on_recorded_run": "none; every recorded turn ended completed or requires_action"
+    },
+    {
+      "date": "2026-11-13",
+      "file": "build_workbook.py",
+      "change": "hashes evaluator.py with line endings normalized to LF, so a CRLF checkout gets the same hash",
+      "effect_on_recorded_run": "none; the manifest was not rebuilt"
     }
   ]
 }

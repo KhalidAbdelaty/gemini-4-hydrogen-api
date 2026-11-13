@@ -160,12 +160,19 @@ def structural_diff(original: Path, repaired: Path, targets: set) -> dict:
 
 
 def evaluate(run_path: Path) -> dict:
+    run_path = Path(run_path).resolve()   # the repaired workbook path is reported relative to ROOT
     run = json.loads(run_path.read_text())
     frozen = run["frozen_proposals"]
     digest = hashlib.sha256(json.dumps(frozen["proposals"], sort_keys=True).encode()).hexdigest()
     assert digest == frozen["sha256"], "frozen proposals were modified after freezing"
     manifest = json.loads(MANIFEST.read_text())
     planted, exceptions = manifest["planted_errors"], manifest["valid_exceptions"]
+    # Refuse to score with an evaluator version the manifest doesn't record. This catches an
+    # unrecorded edit; it is not tamper-proof, since anyone who can edit both files can update both.
+    evaluator_sha = hashlib.sha256(Path(__file__).read_bytes().replace(b"\r\n", b"\n")).hexdigest()  # same hash on CRLF checkouts
+    known = {manifest["sha256"]["evaluator"]} | {c["sha256_after"] for c in manifest.get("post_run_changes", [])
+                                                 if c["file"] == "evaluator.py"}
+    assert evaluator_sha in known, "evaluator.py does not match any version recorded in the manifest"
 
     original = Workbook.from_xlsx(WORKING)
     accepted = [p for p in frozen["proposals"] if p["status"] == "accepted"]
@@ -228,6 +235,7 @@ def evaluate(run_path: Path) -> dict:
     verdict = ("complete repair" if n_repaired == len(planted) and n_hidden == len(hidden) and all(integrity.values())
                else "failure" if n_repaired == 0 else "partial repair")
     result = {
+        "evaluator_sha256": evaluator_sha,
         "proposals_sha256": digest,
         "applied": [f"{p['sheet']}!{p['cell']}" for p in applied],
         "stale_rejected": [f"{p['sheet']}!{p['cell']}" for p in stale],
@@ -242,6 +250,8 @@ def evaluate(run_path: Path) -> dict:
         "structural_diff": diff, "integrity_checks": integrity,
         "verdict": verdict,
     }
+    if "evaluation" in run:   # keep earlier scores instead of overwriting them
+        run.setdefault("previous_evaluations", []).append(run["evaluation"])
     run["evaluation"] = result
     run_path.write_text(json.dumps(run, indent=2, default=str))
     return result
