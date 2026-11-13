@@ -53,5 +53,28 @@
     "B16": 1415000,
     "B17": 43700.0,
     "B18": "Within budget"
-  }
+  },
+  "post_run_changes": [
+    {
+      "date": "2026-11-13",
+      "file": "evaluator.py",
+      "sha256_after": "02cc96bb3111816b2290b0f73ad8389be6da3b11eaa642d22fdc37f37b7232ad",
+      "change": "complete repair now also requires every integrity check (no stale patches, no unauthorized changes, inputs and sheets unchanged, no number-format changes, LibreOffice agreement, exceptions preserved, no false positives)",
+      "effect_on_recorded_run": "re-scored with no API call: same verdict (complete repair), all 8 integrity checks pass"
+    },
+    {
+      "date": "2026-11-13",
+      "file": "tools.py",
+      "sha256_after": "c5aec29c2d7c1d5aa48f0ec021cde60af3aed52336cb8fa0122047c5a21a4743",
+      "change": "submit_repair accepts only an exact (cell, original, replacement) that passed test_formula_patch",
+      "effect_on_recorded_run": "replayed all 21 recorded tool calls: identical results, same 3 accepted repairs"
+    },
+    {
+      "date": "2026-11-13",
+      "file": "agent.py",
+      "sha256_after": "0fe339b9d78166dfe63d29770edf33c66c803f7b64efb2764040923a6c17677a",
+      "change": "a failed, cancelled, or incomplete interaction now stops the run and is recorded in stopped_by",
+      "effect_on_recorded_run": "none; every recorded turn ended completed or requires_action"
+    }
+  ]
 }

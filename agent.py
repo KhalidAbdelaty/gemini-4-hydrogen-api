@@ -149,6 +149,7 @@ class Agent:
         return cost_usd(self.usage)["total"]
 
     def _check_caps(self):
+        # Checked before each API turn, so one turn's batch of tool calls can overshoot the tool-call cap.
         if len(self.turns) >= CAPS["max_api_turns"]:
             raise BudgetExceeded("max_api_turns")
         if self.tool_calls >= CAPS["max_tool_calls"]:
@@ -189,7 +190,10 @@ class Agent:
         interaction, turn = self._create(phase, input_)
         while True:
             calls = [s for s in interaction.steps if s.type == "function_call"]
-            if interaction.status in {"failed", "cancelled", "incomplete"} or not calls:
+            if interaction.status in {"failed", "cancelled", "incomplete"}:
+                # not a finished task: stop the run and record why instead of moving to the next phase
+                raise BudgetExceeded(f"interaction status {interaction.status} in the {phase} phase")
+            if not calls:
                 return turn
             results = []
             for call in calls:  # one function_result per call, same order, matching call_id

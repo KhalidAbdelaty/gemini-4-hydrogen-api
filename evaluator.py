@@ -218,8 +218,15 @@ def evaluate(run_path: Path) -> dict:
     exceptions_kept = {c: repaired.raw(*c.split("!")) == original.raw(*c.split("!")) for c in exceptions}
     n_repaired = sum(1 for e in per_error.values() if e["repaired"])
     n_hidden = sum(1 for r in hidden.values() if r["passed"])
-    verdict = ("complete repair" if n_repaired == len(planted) and n_hidden == len(hidden) and all(exceptions_kept.values())
-               and not false_pos else "failure" if n_repaired == 0 else "partial repair")
+    diff = structural_diff(WORKING, repaired_path, targets)
+    integrity = {"no_stale_patches": not stale, "no_unauthorized_changes": not diff["unauthorized_changes"],
+                 "input_sheets_unchanged": diff["input_sheets_unchanged"], "sheets_unchanged": diff["sheets_unchanged"],
+                 "no_number_format_changes": not diff["number_format_changes"],
+                 "libreoffice_agrees": not lo_mismatch, "exceptions_preserved": all(exceptions_kept.values()),
+                 "no_false_positives": not false_pos}
+    # complete repair = every planted error fixed, every hidden case passed, and every integrity check passed
+    verdict = ("complete repair" if n_repaired == len(planted) and n_hidden == len(hidden) and all(integrity.values())
+               else "failure" if n_repaired == 0 else "partial repair")
     result = {
         "proposals_sha256": digest,
         "applied": [f"{p['sheet']}!{p['cell']}" for p in applied],
@@ -232,7 +239,7 @@ def evaluate(run_path: Path) -> dict:
         "hidden_passed": n_hidden, "hidden_total": len(hidden),
         "repaired_summary_engine": engine, "repaired_summary_libreoffice": lo,
         "libreoffice_mismatches": lo_mismatch,
-        "structural_diff": structural_diff(WORKING, repaired_path, targets),
+        "structural_diff": diff, "integrity_checks": integrity,
         "verdict": verdict,
     }
     run["evaluation"] = result

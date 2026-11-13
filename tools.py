@@ -116,6 +116,7 @@ class Toolbox:
         self.phase = "read_only"
         self.proposals: list[dict] = []
         self.tested: set[str] = set()                       # cells the agent ran through test_formula_patch
+        self.passed_tests: set[tuple] = set()               # exact (cell, original, replacement) that tested cleanly
 
     # ---- dispatcher ----
     def call(self, name: str, args: dict) -> tuple[dict, bool]:
@@ -235,6 +236,7 @@ class Toolbox:
             results[name] = {"target_before": _safe(before, sheet, cell), "target_after": _safe(after, sheet, cell),
                              "summary_before": {c: _safe(before, "Summary", c) for c in KEY_OUTPUTS},
                              "summary_after": {c: _safe(after, "Summary", c) for c in KEY_OUTPUTS}}
+        self.passed_tests.add((key, expected_original_formula, replacement_formula))
         return {"cell": key, "replacement_formula": replacement_formula, "results": results,
                 "summary_cells": {"B13": "total projected opex", "B14": "vendor rebates", "B15": "net opex",
                                   "B17": "remaining budget", "B18": "status"}}
@@ -244,6 +246,8 @@ class Toolbox:
                   "replacement_formula": replacement_formula, "evidence": evidence, "expected_effect": expected_effect}
         try:
             sheet, cell, key = self._check_patch(sheet, cell, original_formula, replacement_formula)
+            if (key, original_formula, replacement_formula) not in self.passed_tests:
+                raise ToolError("untested: run test_formula_patch on this exact cell, original, and replacement first")
         except (ToolError, UnsupportedFormula, FormulaError) as exc:
             record.update(status="rejected", reason=str(exc))
             self.proposals.append(record)
