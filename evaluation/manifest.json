@@ -1,0 +1,57 @@
+{
+  "frozen_at_utc": "2026-11-13T13:20:38+00:00",
+  "sha256": {
+    "working_workbook": "feb63a0afedcd8f47500770d1e5c8a139ed6f74c9e176ae094b2377343adf616",
+    "reference_workbook": "eb839a6b20245415bd9d1c8eb30f46750831ec8ea7aad3670532a1626956d5df",
+    "evaluator": "ae2763ef7daf9b58cba5a71c15e683aa936eb6488cb01d6f45f3cb89dade2e3c"
+  },
+  "libreoffice_cross_check": [
+    {
+      "workbook": "northstar_reference.xlsx",
+      "formula_cells": 58,
+      "mismatches": []
+    },
+    {
+      "workbook": "northstar_q4_budget.xlsx",
+      "formula_cells": 58,
+      "mismatches": []
+    }
+  ],
+  "planted_errors": {
+    "Summary!B13": {
+      "reference": "=SUM(B4:B11)",
+      "broken": "=SUM(B4:B10)",
+      "kind": "excluded approved category (Payment processing) from the total"
+    },
+    "Forecast!D14": {
+      "reference": "=Assumptions!$B$7",
+      "broken": "=Assumptions!$B$5",
+      "kind": "Technology cloud hosting uses Marketing's growth rate"
+    },
+    "Forecast!E20": {
+      "reference": "=IF(B20>=C20,B20*D20,0)",
+      "broken": "=IF(B20>C20,B20*D20,0)",
+      "kind": "rebate threshold uses > instead of >="
+    }
+  },
+  "valid_exceptions": {
+    "Forecast!E6": "R3 fixed-price warehouse lease (no growth)",
+    "Forecast!E8": "R4 paid advertising cap (MIN)"
+  },
+  "summary_reference": {
+    "B13": 1448400.0,
+    "B14": 9300.0,
+    "B15": 1439100.0,
+    "B16": 1415000,
+    "B17": -24100.0,
+    "B18": "Over budget"
+  },
+  "summary_working": {
+    "B13": 1375800.0,
+    "B14": 4500.0,
+    "B15": 1371300.0,
+    "B16": 1415000,
+    "B17": 43700.0,
+    "B18": "Within budget"
+  }
+}
