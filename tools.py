@@ -76,7 +76,7 @@ DECLARATIONS = [
          "required": ["sheet", "cell", "original_formula", "replacement_formula", "evidence", "expected_effect"]}},
 ]
 
-PHASE_TOOLS = {"read_only": set(), "investigate": {"inspect_cells", "trace_dependencies"},
+PHASE_TOOLS = {"read_only": set(), "diagnosis": set(), "investigate": {"inspect_cells", "trace_dependencies"},
                "repair": {"inspect_cells", "trace_dependencies", "test_formula_patch", "submit_repair"},
                "frozen": set()}
 

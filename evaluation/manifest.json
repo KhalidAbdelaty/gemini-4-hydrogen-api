@@ -81,6 +81,13 @@
       "file": "build_workbook.py",
       "change": "hashes evaluator.py with line endings normalized to LF, so a CRLF checkout gets the same hash",
       "effect_on_recorded_run": "none; the manifest was not rebuilt"
+    },
+    {
+      "date": "2026-11-14",
+      "file": "tools.py",
+      "sha256_after": "3966fd2631b3b7fa4acdfccb33d206c9802bbc620936d608d5cc5ad80df1159a",
+      "change": "PHASE_TOOLS has a diagnosis entry with no tools, so a tool call in that phase returns an error to the model instead of raising KeyError and stopping the run",
+      "effect_on_recorded_run": "none; the recorded diagnosis turn made no tool calls, and all 21 recorded tool calls replay with identical results"
     }
   ]
 }
